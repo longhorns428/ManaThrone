@@ -11,18 +11,16 @@
 </head>
 <body>
 
-<!-- Navigation --> 
+<!-- Navigation -->
 <nav class="navbar navbar-default">
   <div class="container">
     <div class="navbar-header">
       <a class="navbar-brand" href="index.html">ManaThrone</a>
     </div>
     <ul class="nav navbar-nav navbar-right">
-      <li><a href="index.html">Home</a></li>
-	        <li><a href="about.html">About</a></li>
+      <li><a href="index.html#about">About</a></li>
       <li class="active"><a href="product.html">Mystery Boxes</a></li>
-            <li><a href="cart.html">Cart</a></li>
-
+      <li><a href="cart.html">Cart</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
   </div>
@@ -33,6 +31,7 @@
   <div class="container text-center">
     <h1>Mystery Commander Boxes</h1>
     <p>Curated 100-card Commander decks — sleeved, themed, and ready to play.</p>
+    <p class="mt-note"><small>Tip: Click “Buy” to add to cart instantly.</small></p>
   </div>
 </section>
 
@@ -41,6 +40,7 @@
   <div class="container">
     <div class="row">
 
+      <!-- Standard -->
       <div class="col-md-6">
         <div class="panel panel-default">
           <div class="panel-body">
@@ -51,11 +51,24 @@
               <li>Balanced mana base (no trash lands)</li>
               <li>Commander face card protected</li>
             </ul>
-            <a href="#" class="btn btn-primary">Buy Standard</a>
+
+            <div class="mt-price-row">
+              <div class="mt-price"><span class="mt-gold">$</span><span id="price-standard">59.99</span></div>
+              <button
+                class="btn btn-primary"
+                data-add-to-cart
+                data-id="standard"
+                data-name="Standard Mystery Box"
+                data-price="59.99">
+                Buy Standard
+              </button>
+            </div>
+
           </div>
         </div>
       </div>
 
+      <!-- Premium -->
       <div class="col-md-6">
         <div class="panel panel-default">
           <div class="panel-body">
@@ -66,15 +79,27 @@
               <li>Upgraded commander / featured cards</li>
               <li>Extra themed accessories</li>
             </ul>
-            <a href="#" class="btn btn-primary">Buy Premium</a>
+
+            <div class="mt-price-row">
+              <div class="mt-price"><span class="mt-gold">$</span><span id="price-premium">89.99</span></div>
+              <button
+                class="btn btn-primary"
+                data-add-to-cart
+                data-id="premium"
+                data-name="Premium Mystery Box"
+                data-price="99.99">
+                Buy Premium
+              </button>
+            </div>
+
           </div>
         </div>
       </div>
 
     </div>
 
-    <div class="text-center" style="margin-top: 20px;">
-      <p><small>* Want color preferences (e.g., Golgari / Izzet)? Add it in checkout notes.</small></p>
+    <div class="text-center" style="margin-top: 18px;">
+      <p><small>* Want color preferences (Golgari / Izzet / etc.)? Add it in checkout notes.</small></p>
     </div>
   </div>
 </section>
@@ -88,5 +113,41 @@
 
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
+
+<script>
+  (function () {
+    const CART_KEY = "mt_cart_v1";
+
+    function getCart() {
+      try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
+      catch { return []; }
+    }
+
+    function saveCart(cart) {
+      localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    }
+
+    function addItem(item) {
+      const cart = getCart();
+      const existing = cart.find(p => p.id === item.id);
+      if (existing) existing.qty += 1;
+      else cart.push({ ...item, qty: 1 });
+      saveCart(cart);
+    }
+
+    document.querySelectorAll("[data-add-to-cart]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const item = {
+          id: btn.dataset.id,
+          name: btn.dataset.name,
+          price: Number(btn.dataset.price)
+        };
+        addItem(item);
+        window.location.href = "cart.html";
+      });
+    });
+  })();
+</script>
+
 </body>
 </html>

@@ -314,3 +314,115 @@ small{
   text-align: center;
   margin-top: 16px;
 }
+/* =========================
+   ManaThrone Cart helpers
+   ========================= */
+.mt-price-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 14px;
+  margin-top: 18px;
+}
+.mt-price{
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  font-size: 20px;
+}
+.mt-gold{ color: var(--gold); }
+
+.mt-full{ width: 100%; }
+
+.mt-hr{
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 14px 0;
+}
+
+.mt-muted{ color: rgba(231,226,214,0.70); }
+
+/* Cart rows */
+.mt-cart-header,
+.mt-cart-row{
+  display:grid;
+  grid-template-columns: 1.6fr 0.8fr 0.8fr 0.8fr 0.6fr;
+  gap: 12px;
+  align-items:center;
+}
+
+.mt-cart-header{
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+
+.mt-cart-row{
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(231,226,214,0.08);
+}
+
+.mt-qty{
+  display:inline-flex;
+  align-items:center;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow:hidden;
+  background: rgba(255,255,255,0.02);
+}
+
+.mt-qty-btn{
+  border: none;
+  background: transparent;
+  color: rgba(231,226,214,0.85);
+  font-weight: 900;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.mt-qty-btn:hover{
+  color: var(--emerald);
+}
+
+.mt-qty-num{
+  padding: 6px 10px;
+  min-width: 28px;
+  text-align:center;
+  color: rgba(231,226,214,0.95);
+  font-weight: 800;
+}
+
+.mt-remove{
+  background: transparent;
+  border: none;
+  color: rgba(231,226,214,0.70);
+  cursor: pointer;
+  text-decoration: underline;
+}
+.mt-remove:hover{
+  color: var(--gold);
+}
+
+.mt-summary-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap: 10px;
+  padding: 8px 0;
+}
+
+.mt-cart-actions{
+  display:flex;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px){
+  .mt-cart-header{ display:none; }
+  .mt-cart-row{
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .mt-cart-row > div{
+    text-align: left !important;
+  }
+}
