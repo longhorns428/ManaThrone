@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>ManaThrone | Cart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link href="https://fonts.googleapis.com/css?family=Karla:400,700" rel="stylesheet">
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="index.html">ManaThrone</a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="product.html">Mystery Boxes</a></li>
+      <li class="active"><a href="cart.html">Cart</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="section">
+  <div class="container text-center">
+    <h1>Your Cart</h1>
+    <p>Confirm your order before you approach the throne.</p>
+  </div>
+</section>
+
+<section class="section bg-light">
+  <div class="container">
+
+    <div id="mtEmpty" class="text-center" style="display:none;">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <h3>Your cart is empty</h3>
+          <p>Choose a mystery box and we’ll forge your next deck.</p>
+          <a class="btn btn-primary" href="product.html">Browse Mystery Boxes</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="mtCartUI" style="display:none;">
+      <div class="row">
+
+        <div class="col-md-8">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <h3>Items</h3>
+
+              <div class="mt-cart-header mt-muted">
+                <div>Product</div>
+                <div class="text-center">Qty</div>
+                <div class="text-right">Price</div>
+                <div class="text-right">Total</div>
+                <div></div>
+              </div>
+
+              <div id="mtCartItems"></div>
+
+              <div class="mt-cart-actions">
+                <button id="mtClearCart" class="btn btn-outline-primary" type="button">Clear Cart</button>
+                <a class="btn btn-outline-primary" href="product.html">Add More</a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <h3>Order Summary</h3>
+
+              <div class="mt-summary-row">
+                <span class="mt-muted">Subtotal</span>
+                <strong id="mtSubtotal">$0.00</strong>
+              </div>
+
+              <div class="mt-summary-row">
+                <span class="mt-muted">Estimated shipping</span>
+                <span class="mt-muted">Calculated at checkout</span>
+              </div>
+
+              <hr class="mt-hr">
+
+              <div class="mt-summary-row">
+                <span>Total</span>
+                <strong id="mtTotal">$0.00</strong>
+              </div>
+
+              <label for="mtNotes" style="margin-top:14px;">Order notes (optional)</label>
+              <textarea id="mtNotes" class="form-control" rows="4" placeholder="Color prefs, power level, themes you love..."></textarea>
+
+              <button id="mtCheckout" class="btn btn-primary mt-full" type="button" style="margin-top:14px;">
+                Proceed to Checkout
+              </button>
+
+              <p class="mt-note">
+                <small>* Checkout is the next step (Stripe/PayPal). For now this demo stores your cart locally.</small>
+              </p>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container text-center">
+    <p>© 2026 ManaThrone. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+
+<script>
+  (function () {
+    const CART_KEY = "mt_cart_v1";
+    const notesKey = "mt_cart_notes_v1";
+
+    const elEmpty = document.getElementById("mtEmpty");
+    const elUI = document.getElementById("mtCartUI");
+    const elItems = document.getElementById("mtCartItems");
+    const elSubtotal = document.getElementById("mtSubtotal");
+    const elTotal = document.getElementById("mtTotal");
+    const elNotes = document.getElementById("mtNotes");
+
+    function money(n) {
+      return "$" + (Math.round(n * 100) / 100).toFixed(2);
+    }
+
+    function getCart() {
+      try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
+      catch { return []; }
+    }
+
+    function saveCart(cart) {
+      localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    }
+
+    function render() {
+      const cart = getCart();
+
+      if (!cart.length) {
+        elEmpty.style.display = "block";
+        elUI.style.display = "none";
+        return;
+      }
+
+      elEmpty.style.display = "none";
+      elUI.style.display = "block";
+
+      elItems.innerHTML = "";
+
+      let subtotal = 0;
+
+      cart.forEach(item => {
+        const lineTotal = item.price * item.qty;
+        subtotal += lineTotal;
+
+        const row = document.createElement("div");
+        row.className = "mt-cart-row";
+        row.innerHTML = `
+          <div class="mt-cart-name">
+            <strong>${item.name}</strong>
+            <div class="mt-muted"><small>ManaThrone Mystery Box</small></div>
+          </div>
+
+          <div class="text-center">
+            <div class="mt-qty">
+              <button class="mt-qty-btn" data-dec="${item.id}" aria-label="Decrease quantity">−</button>
+              <span class="mt-qty-num">${item.qty}</span>
+              <button class="mt-qty-btn" data-inc="${item.id}" aria-label="Increase quantity">+</button>
+            </div>
+          </div>
+
+          <div class="text-right">${money(item.price)}</div>
+          <div class="text-right"><strong>${money(lineTotal)}</strong></div>
+
+          <div class="text-right">
+            <button class="mt-remove" data-remove="${item.id}" aria-label="Remove item">Remove</button>
+          </div>
+        `;
+
+        elItems.appendChild(row);
+      });
+
+      elSubtotal.textContent = money(subtotal);
+      elTotal.textContent = money(subtotal);
+    }
+
+    function updateQty(id, delta) {
+      const cart = getCart();
+      const item = cart.find(p => p.id === id);
+      if (!item) return;
+
+      item.qty += delta;
+      if (item.qty <= 0) {
+        const next = cart.filter(p => p.id !== id);
+        saveCart(next);
+      } else {
+        saveCart(cart);
+      }
+      render();
+    }
+
+    function removeItem(id) {
+      const cart = getCart().filter(p => p.id !== id);
+      saveCart(cart);
+      render();
+    }
+
+    document.addEventListener("click", (e) => {
+      const t = e.target;
+
+      if (t.dataset.inc) updateQty(t.dataset.inc, 1);
+      if (t.dataset.dec) updateQty(t.dataset.dec, -1);
+      if (t.dataset.remove) removeItem(t.dataset.remove);
+    });
+
+    document.getElementById("mtClearCart").addEventListener("click", () => {
+      localStorage.removeItem(CART_KEY);
+      render();
+    });
+
+    // Persist notes
+    elNotes.value = localStorage.getItem(notesKey) || "";
+    elNotes.addEventListener("input", () => {
+      localStorage.setItem(notesKey, elNotes.value);
+    });
+
+    document.getElementById("mtCheckout").addEventListener("click", () => {
+      alert("Checkout is next (Stripe/PayPal). Tell me which you want and I’ll wire it up.");
+    });
+
+    render();
+  })();
+</script>
+
+</body>
+</html>
